@@ -14,6 +14,8 @@ class ChatbotScreen extends StatefulWidget {
 class _ChatbotScreenState extends State<ChatbotScreen> {
 
   askGemini() async {
+
+    var inputText = textEditingController.text;
     final response = await post(
       Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent'),
       headers: {
@@ -26,7 +28,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             {
               "parts": [
                 {
-                  "text": "hello"
+                  "text": inputText
                 }
               ]
             }
@@ -39,6 +41,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
   }
 
+  TextEditingController textEditingController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +53,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           Expanded(child: Center(child: Text('Results To Be Shown Here'))),
           Row(
             children: [
-              Expanded(child: TextField()),
+              Expanded(child: TextField(
+                controller: textEditingController,
+              )),
               IconButton(
                 onPressed: () {
                   askGemini();
