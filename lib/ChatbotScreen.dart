@@ -13,9 +13,11 @@ class ChatbotScreen extends StatefulWidget {
 
 class _ChatbotScreenState extends State<ChatbotScreen> {
 
-  askGemini() async {
+  var results = "Results To Be Shown Here";
 
+  askGemini() async {
     var inputText = textEditingController.text;
+    textEditingController.clear();
     final response = await post(
       Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent'),
       headers: {
@@ -32,7 +34,14 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                 }
               ]
             }
-          ]
+          ],
+          "generationConfig":
+            {
+              "thinkingConfig":
+                {
+                  "thinkingBudget": 0
+                }
+            }
         }
       )
     );
@@ -41,9 +50,16 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       final jsonData = jsonDecode(response.body);
       final jsonCanArray = jsonData['candidates'];
       if (jsonCanArray != null && jsonCanArray.isNotEmpty) {
-        jsonCanArray[0]["content"]["parts"][0]["text"];
+        results = jsonCanArray[0]["content"]["parts"][0]["text"];
+        setState(() {
+          results;
+        });
       }
-
+    } else {
+      results = "There is some error ${response.statusCode}";
+      setState(() {
+        results;
+      });
     }
 
     print(response.body.toString());
@@ -54,26 +70,32 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.deepPurple,),
-
-      body: Column(
-        children: [
-          Expanded(child: Center(child: Text('Results To Be Shown Here'))),
-          Row(
-            children: [
-              Expanded(child: TextField(
-                controller: textEditingController,
-              )),
-              IconButton(
-                onPressed: () {
-                  askGemini();
-                },
-                icon: Icon(Icons.send),)
-              
-            ],
-          )
-        ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(backgroundColor: Colors.deepPurple,),
+      
+        body: Column(
+          children: [
+            Expanded(
+                child: Center(
+                    child: Text(results)
+                )
+            ),
+            Row(
+              children: [
+                Expanded(child: TextField(
+                  controller: textEditingController,
+                )),
+                IconButton(
+                  onPressed: () {
+                    askGemini();
+                  },
+                  icon: Icon(Icons.send),)
+                
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
