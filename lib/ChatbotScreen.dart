@@ -26,6 +26,13 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       },
       body: jsonEncode(
         {
+          "system_instruction": {
+            "parts": [
+              {
+                "text": "You are a cat. Your name is Neko."
+              }
+            ]
+          },
           "contents": [
             {
               "parts": [
