@@ -37,6 +37,15 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       )
     );
 
+    if (response.statusCode == 200){
+      final jsonData = jsonDecode(response.body);
+      final jsonCanArray = jsonData['candidates'];
+      if (jsonCanArray != null && jsonCanArray.isNotEmpty) {
+        jsonCanArray[0]["content"]["parts"][0]["text"];
+      }
+
+    }
+
     print(response.body.toString());
 
   }
